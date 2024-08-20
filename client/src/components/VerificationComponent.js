@@ -5,6 +5,7 @@ const VerificationComponent = () => {
     const [jsonFile, setJsonFile] = useState(null);
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const handleFileChange = (e) => {
         const fileReader = new FileReader();
@@ -30,6 +31,7 @@ const VerificationComponent = () => {
         }
 
         try {
+            setLoading(true);
             const response = await axios.post(
                 "http://localhost:8080/api/v1/verify",
                 jsonFile,
@@ -44,6 +46,7 @@ const VerificationComponent = () => {
             setError("Error verifying JSON. Please check your API and file format.");
             console.error(err);
         }
+        setLoading(false);
     };
 
     return (
@@ -62,6 +65,7 @@ const VerificationComponent = () => {
                     </div>
                 </div>
             </form>
+            {loading && <div className="spinner"></div>}
 
             {result && (
                 <div>
