@@ -12,3 +12,30 @@ Set .env file. By default:
 And then
 
     docker-compose up
+
+### Usage
+1. Register a new user
+
+
+    POST http://localhost:8080/api/v1/register
+    {
+    "name": "John Doe",
+    "email": "johndoe@example.com",
+    "password": "password",
+    "password_confirmation": "password"
+    }
+
+2. Log in with the user's credentials to receive an API token:
+
+
+    POST http://localhost:8080/api/v1/login
+    {
+    "email": "johndoe@example.com",
+    "password": "password",
+    "device_name": "my_device"
+    }
+
+3. Use auth header
+
+
+    Authorization: Bearer <YOUR_TOKEN>
