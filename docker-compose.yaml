@@ -1,0 +1,44 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: accredify_frontend
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8080:80"
+    networks:
+      - accredify_network
+    depends_on:
+      - pgdatabase
+
+  pgdatabase:
+    image: postgres
+    container_name: accredify_pgdatabase
+    environment:
+      POSTGRES_DB: laravel
+      POSTGRES_USER: laravel_user
+      POSTGRES_PASSWORD: laravel_password
+    ports:
+      - "5432:5432"
+    networks:
+      - accredify_network
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: accredify_react
+    ports:
+      - "3000:3000"
+    networks:
+      - accredify_network
+
+networks:
+  accredify_network:
+
+volumes:
+  pgdata:
