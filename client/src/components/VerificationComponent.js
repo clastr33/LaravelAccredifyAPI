@@ -33,7 +33,7 @@ const VerificationComponent = () => {
         try {
             setLoading(true);
             const response = await axios.post(
-                "http://localhost:8080/api/v1/verify",
+                process.env.REACT_APP_VERIFY_API,
                 jsonFile,
                 {
                     headers: {
@@ -51,7 +51,7 @@ const VerificationComponent = () => {
 
     return (
         <div className="container">
-            <h1>JSON Verification</h1>
+            <h1>{process.env.REACT_APP_PAGE_TITLE}</h1>
             <form onSubmit={handleSubmit}>
                 <div className="mb-3 row">
                     <div className="col-sm-10">
