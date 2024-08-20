@@ -10,7 +10,12 @@ const VerificationComponent = () => {
         const fileReader = new FileReader();
         fileReader.readAsText(e.target.files[0], "UTF-8");
         fileReader.onload = (e) => {
-            setJsonFile(JSON.parse(e.target.result));
+            try {
+                setJsonFile(JSON.parse(e.target.result));
+            } catch (err) {
+                setError("Error verifying JSON. Please check your file format.");
+                console.error(err);
+            }
         };
     };
 
@@ -42,11 +47,20 @@ const VerificationComponent = () => {
     };
 
     return (
-        <div>
+        <div className="container">
             <h1>JSON Verification</h1>
             <form onSubmit={handleSubmit}>
-                <input type="file" accept=".json" onChange={handleFileChange} />
-                <button type="submit">Verify JSON</button>
+                <div className="mb-3 row">
+                    <div className="col-sm-10">
+                        <input type="file" className="form-control" onChange={handleFileChange}/>
+                    </div>
+                </div>
+
+                <div className="row">
+                    <div className="col-sm-10 offset-sm-2">
+                        <button type="submit" className="btn btn-primary">Verify JSON</button>
+                    </div>
+                </div>
             </form>
 
             {result && (
@@ -58,7 +72,7 @@ const VerificationComponent = () => {
             )}
 
             {error && (
-                <div style={{ color: "red" }}>
+                <div style={{color: "red"}}>
                     <p>{error}</p>
                 </div>
             )}
