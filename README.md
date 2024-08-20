@@ -41,12 +41,17 @@ And then
     Authorization: Bearer <YOUR_TOKEN>
 
 ### Use React client
-client/.env
+Set in file client/.env
 
     REACT_APP_VERIFY_API="http://localhost:8080/api/v1/verify"
     REACT_APP_AUTH_TOKEN="<YOUR_TOKEN>"
     REACT_APP_PAGE_TITLE="JSON Verification"
 
-cd client
+Then
 
-npm start
+    docker-compose up --build -d
+
+or
+
+    cd client
+    npm start
