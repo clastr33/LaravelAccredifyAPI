@@ -16,6 +16,7 @@ class AccredifyController extends Controller
         $verificationResult = 'verified';
 
         $data = $request->input('data');
+        $signature = $request->input('signature');
 
         $megabyte = 1024 * 1024;
         $maxSize = 2;
@@ -82,9 +83,43 @@ class AccredifyController extends Controller
                 'signature.targetHash' => 'required|string',
             ]);
 
-            // TODO AS: Condition 3: JSON has a valid signature
-
             if ($validatorCondition3->fails()) {
+                $verificationResult = ['error' => 'invalid_signature'];
+            }
+        }
+
+        // JSON has a valid signature
+        if ($verificationResult === 'verified') {
+            // Step 1: Flatten the data object into dot notation
+            // {
+            //    "name": "Certificate of Completion",
+            //    "recipient.name": "Marty McFly",
+            // ... }
+            $flattenedData = $this->flattenToDotNotation($data);
+
+            // Step 2: Compute a hash for each key-value pair. Use sha256.
+            //[ "8d79f393cc294fd3daca0402209997db5ff8a2ad1a498702f0956952677881ae",
+            // "cd77eab0fa4b92136f883dfe6fe63d7ee68a98a7697874609a5f9d24adaa0f04",
+            // ... ]
+            $hashes = [];
+            foreach ($flattenedData as $key => $value) {
+                $concatenated = '{"' . $key . '":"' . $value . '"}';
+                $hashes[] = hash('sha256', $concatenated);
+            }
+
+            // Step 3: Sort the hashes and compute the final target hash
+            sort($hashes);
+
+            $finalHashInputArr = [];
+            foreach ($hashes as $hash) {
+                $finalHashInputArr[] = '"' . $hash . '"';
+            }
+            $finalHashInputLine = implode(',', $finalHashInputArr);
+            $finalHashInputLine = '[' . $finalHashInputLine . ']';
+
+            // Hash them all together
+            $computedTargetHash = hash('sha256', $finalHashInputLine);
+            if ($computedTargetHash !== $signature['targetHash']) {
                 $verificationResult = ['error' => 'invalid_signature'];
             }
         }
@@ -109,5 +144,19 @@ class AccredifyController extends Controller
         }
 
         return response()->json($verificationResult, 200);
+    }
+
+    private function flattenToDotNotation(array $array, string $prefix = ''): array
+    {
+        $result = [];
+        foreach ($array as $key => $value) {
+            $prefixedKey = $prefix . $key;
+            if (is_array($value)) {
+                $result = array_merge($result, $this->flattenToDotNotation($value, $prefixedKey . '.'));
+            } else {
+                $result[$prefixedKey] = $value;
+            }
+        }
+        return $result;
     }
 }
