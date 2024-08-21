@@ -15,6 +15,13 @@ class AccredifyController extends Controller
         $userId = auth()->id();
         $verificationResult = 'verified';
 
+        $megabyte = 1024 * 1024;
+        $maxSize = 2;
+
+        if (strlen($request->getContent()) > $maxSize  * $megabyte) {
+            $verificationResult = ['error' => 'The JSON payload exceeds the maximum size of ' . $maxSize . 'MB.'];
+        }
+
         // Validator Condition 1
         if ($verificationResult === 'verified') {
         $validatorCondition1 = Validator::make($request->all(), [
