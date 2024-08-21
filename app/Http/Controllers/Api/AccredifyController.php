@@ -15,6 +15,8 @@ class AccredifyController extends Controller
         $userId = auth()->id();
         $verificationResult = 'verified';
 
+        $data = $request->input('data');
+
         $megabyte = 1024 * 1024;
         $maxSize = 2;
 
@@ -47,13 +49,27 @@ class AccredifyController extends Controller
                 'data.issuer.identityProof.location' => 'required|string',
             ]);
 
-            // TODO AS: For the sample JSON,
-            //  did:ethr:0x05b642ff12a4ae545357d82ba4f786f3aed84214#controller
-            //  is found in the DNS TXT record of ropstore.accredify.io
-            //  Can use Google DNS API for DNS lookup
-            //  e.g. https://dns.google/resolve?name=ropstore.accredify.io&type=TXT
-
             if ($validatorCondition2->fails()) {
+                $verificationResult = ['error' => 'invalid_issuer'];
+            }
+        }
+
+        // Check DNS TXT records
+        if ($verificationResult === 'verified') {
+            $issuerKey = $data['issuer']['identityProof']['key'];
+            $issuerLocation = $data['issuer']['identityProof']['location'];
+
+            $dnsRecords = dns_get_record($issuerLocation, DNS_TXT);
+
+            $foundKey = false;
+            foreach ($dnsRecords as $record) {
+                if (isset($record['txt']) && strpos($record['txt'], $issuerKey) !== false) {
+                    $foundKey = true;
+                    break;
+                }
+            }
+
+            if (!$foundKey) {
                 $verificationResult = ['error' => 'invalid_issuer'];
             }
         }
@@ -75,7 +91,6 @@ class AccredifyController extends Controller
 
         // Success
         if ($verificationResult === 'verified') {
-            $data = $request->input('data');
             $issuer = $data['issuer']['name'];
 
             // Store the result in the database

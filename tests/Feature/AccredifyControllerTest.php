@@ -91,6 +91,21 @@ class AccredifyControllerTest extends TestCase
             ]);
     }
 
+    //API responds with invalid_issuer when identityProof key not found.
+    public function test_dns_record_not_found()
+    {
+        $payload = $this->payload;
+        // Invalid key
+        $payload['data']['issuer']['identityProof']['key'] = 'badkey';
+
+        $response = $this->postJson('/api/v1/verify', $payload);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'error' => 'invalid_issuer'
+            ]);
+    }
+
     //API responds with invalid_signature when doesn't match the expected hash.
     public function test_verification_invalid_signature()
     {

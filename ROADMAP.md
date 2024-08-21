@@ -1,7 +1,6 @@
 # Roadmap Laravel Accredify API
 
 ### Features
-- The value of issuer.identityProof.key
 - A target hash computation
 - React: user register, login, logout
 
@@ -10,5 +9,8 @@
 - Lightweight technical documentation such as diagrams https://dbdiagram.io/
 
 ### Improvements
+- React: show errors
+- React: de-attach file after use
 - SSL
 - Handle CORS Issues
+- Run on PostgreSQL instead of SQLite
