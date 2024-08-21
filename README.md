@@ -1,7 +1,10 @@
 # Laravel Accredify API
+https://github.com/clastr33/LaravelAccredifyAPI
+
 
 ### Run
-    git clone git@bitbucket.org:clastr333/laravelaccredifyapi.git .
+    git clone git@github.com:clastr33/LaravelAccredifyAPI.git .
+
 
 Set .env file. By default:
 
@@ -55,6 +58,8 @@ or
 
     cd client
     npm start
+
+Note: after changes in client/.env need to restart npm.
 
 ### Unit tests
 Run in CLI
