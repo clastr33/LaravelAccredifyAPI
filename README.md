@@ -55,3 +55,8 @@ or
 
     cd client
     npm start
+
+### Unit tests
+Run in CLI
+
+    php artisan test
